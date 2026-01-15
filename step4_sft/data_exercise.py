@@ -7,9 +7,9 @@ Step 4: SFT 数据处理
 """
 
 import json
+
 import torch
 from torch.utils.data import Dataset
-
 
 SPECIAL_TOKENS = {
     'bos': '<s>',
@@ -38,7 +38,7 @@ class SFTDataset(Dataset):
         self.max_length = max_length
         self.data = []
 
-        with open(data_path, 'r', encoding='utf-8') as f:
+        with open(data_path, encoding='utf-8') as f:
             for line in f:
                 if line.strip():
                     item = json.loads(line)
@@ -206,7 +206,7 @@ def test_sft_dataset():
         assert loss_tokens < total_tokens, "应该只有部分 token 计算 loss"
         assert loss_tokens > 0, "至少应该有一些 token 计算 loss"
 
-        print(f"✅ SFT 数据集测试通过!")
+        print("✅ SFT 数据集测试通过!")
         print(f"   计算 Loss 的 token: {loss_tokens}/{total_tokens} ({100*loss_tokens/total_tokens:.1f}%)")
         return True
     except NotImplementedError as e:

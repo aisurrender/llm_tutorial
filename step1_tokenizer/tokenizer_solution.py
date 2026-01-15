@@ -8,9 +8,8 @@ Step 1: Tokenizer - 文本如何变成数字
 运行: python tokenizer.py
 """
 
-from collections import defaultdict
 import re
-
+from collections import defaultdict
 
 # =============================================================================
 # 1. 字符级 Tokenizer（最简单的实现）
@@ -286,7 +285,7 @@ def demo_bpe_tokenizer():
     print(f"解码: {decoded}")
 
     # 查看一些学到的合并规则
-    print(f"\n学到的部分合并规则:")
+    print("\n学到的部分合并规则:")
     for i, (pair, merged) in enumerate(list(tokenizer.merges.items())[:10]):
         print(f"  {pair} -> {merged}")
 

@@ -7,14 +7,11 @@ Step 2: GPT Model - Transformer 架构
 或在 tutorial.ipynb 中验证
 """
 
-import math
 from dataclasses import dataclass
-from typing import Optional
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
 
 # =============================================================================
 # 模型配置（已实现）
@@ -298,7 +295,7 @@ class GPT(nn.Module):
     def forward(
         self,
         idx: torch.Tensor,
-        targets: Optional[torch.Tensor] = None
+        targets: torch.Tensor | None = None
     ) -> tuple:
         """
         前向传播
@@ -312,7 +309,7 @@ class GPT(nn.Module):
             loss: 交叉熵损失（如果提供了 targets）
         """
         B, T = idx.size()
-        assert T <= self.config.block_size, f"序列长度 {T} 超过最大长度 {self.config.block_size}"
+        assert self.config.block_size >= T, f"序列长度 {T} 超过最大长度 {self.config.block_size}"
 
         # =================================================================
         # TODO 4a: Token Embedding + Position Embedding
@@ -355,7 +352,7 @@ class GPT(nn.Module):
         idx: torch.Tensor,
         max_new_tokens: int,
         temperature: float = 1.0,
-        top_k: Optional[int] = None
+        top_k: int | None = None
     ) -> torch.Tensor:
         """自回归生成（已实现）"""
         for _ in range(max_new_tokens):

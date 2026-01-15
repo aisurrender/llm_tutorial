@@ -9,11 +9,11 @@ Step 3: 预训练脚本
     python train.py --device cuda --epochs 5   # NVIDIA GPU
 """
 
+import argparse
+import math
 import os
 import sys
-import math
 import time
-import argparse
 from contextlib import nullcontext
 
 import torch
@@ -23,8 +23,8 @@ from torch.utils.data import DataLoader
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from step2_gpt_model.model import GPT, GPTConfig
-from data import PretrainDataset, create_sample_data
 
+from data import PretrainDataset, create_sample_data
 
 # =============================================================================
 # 学习率调度
@@ -74,7 +74,7 @@ def train(args):
     # 2. 准备数据
     data_path = args.data_path
     if not os.path.exists(data_path):
-        print(f"数据文件不存在，创建示例数据...")
+        print("数据文件不存在，创建示例数据...")
         create_sample_data(data_path)
 
     dataset = PretrainDataset(data_path, block_size=args.block_size)
@@ -107,7 +107,7 @@ def train(args):
     warmup_steps = int(0.1 * total_steps)  # 10% warmup
     global_step = 0
 
-    print(f"\n开始训练:")
+    print("\n开始训练:")
     print(f"  总步数: {total_steps}")
     print(f"  Warmup 步数: {warmup_steps}")
     print(f"  Batch size: {args.batch_size}")
@@ -207,7 +207,7 @@ def generate(args):
 
     # 生成
     print(f"\nPrompt: {args.prompt}")
-    print(f"生成中...")
+    print("生成中...")
 
     y = model.generate(x, max_new_tokens=args.max_tokens, temperature=args.temperature, top_k=args.top_k)
 

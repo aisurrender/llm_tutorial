@@ -7,9 +7,8 @@ Step 1: Tokenizer - 文本如何变成数字
 或在 tutorial.ipynb 中验证
 """
 
-from collections import defaultdict
 import re
-
+from collections import defaultdict
 
 # =============================================================================
 # 1. 字符级 Tokenizer（最简单的实现）

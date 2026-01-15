@@ -22,10 +22,84 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "wandb",  # for training visualization
+    "wandb",      # Training visualization
+    "ruff",       # Linting and formatting
+    "mypy",       # Type checking
+    "pytest",     # Testing framework
+    "pre-commit", # Git hooks
 ]
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "wandb",
+    "ruff",
+    "mypy",
+    "pytest",
+    "pre-commit",
+]
+
+# =============================================================================
+# Ruff - Fast Python linter and formatter
+# =============================================================================
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+exclude = [
+    ".venv",
+    "__pycache__",
+    ".git",
+    "*.ipynb",
+    "*_exercise.py",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "F",      # pyflakes
+    "I",      # isort
+    "W",      # pycodestyle warnings
+    "UP",     # pyupgrade
+    "B",      # flake8-bugbear
+    "SIM",    # flake8-simplify
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "B008",   # function call in default argument (common in dataclasses)
+    "SIM108", # ternary operator (sometimes less readable)
+    "B007",   # loop variable not used (common in demos)
+    "B905",   # zip strict (not needed for tutorial code)
+    "SIM222", # or True pattern (intentional in demos)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["shared"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+# =============================================================================
+# MyPy - Static type checking
+# =============================================================================
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_ignores = true
+ignore_missing_imports = true
+exclude = [
+    "^\\.venv/",
+    "^__pycache__/",
+]
+
+# =============================================================================
+# Pytest - Testing framework
+# =============================================================================
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
 ]

@@ -135,7 +135,7 @@ def test_projection():
         assert projected.shape == (2, 196, text_dim), \
             f"Projection 输出形状错误: {projected.shape}"
 
-        print(f"✅ Projection Layer 测试通过!")
+        print("✅ Projection Layer 测试通过!")
         print(f"   输入: {image_features.shape}")
         print(f"   输出: {projected.shape}")
         return True

@@ -7,12 +7,10 @@ Step 3: 预训练脚本
     python train_exercise.py --device cpu --epochs 3
 """
 
+import argparse
 import os
 import sys
-import math
 import time
-import argparse
-from contextlib import nullcontext
 
 import torch
 from torch.utils.data import DataLoader
@@ -20,9 +18,9 @@ from torch.utils.data import DataLoader
 # 添加上级目录到路径
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from step2_gpt_model.model_solution import GPT, GPTConfig
 from data_exercise import PretrainDataset, create_sample_data
 
+from step2_gpt_model.model_solution import GPT, GPTConfig
 
 # =============================================================================
 # TODO 2: 学习率调度
@@ -108,7 +106,7 @@ def train(args):
     # 2. 准备数据
     data_path = args.data_path
     if not os.path.exists(data_path):
-        print(f"数据文件不存在，创建示例数据...")
+        print("数据文件不存在，创建示例数据...")
         create_sample_data(data_path)
 
     dataset = PretrainDataset(data_path, block_size=args.block_size)
@@ -133,7 +131,7 @@ def train(args):
     warmup_steps = int(0.1 * total_steps)
     global_step = 0
 
-    print(f"\n开始训练:")
+    print("\n开始训练:")
     print(f"  总步数: {total_steps}")
     print(f"  Warmup 步数: {warmup_steps}")
     print(f"  Batch size: {args.batch_size}")

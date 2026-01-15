@@ -9,22 +9,21 @@ Step 6: VLM 训练脚本
     python train.py --device cuda --epochs 3
 """
 
-import os
-import sys
+import argparse
 import json
 import math
+import os
+import sys
 import time
-import argparse
 from contextlib import nullcontext
 
 import torch
-from torch.utils.data import Dataset, DataLoader
-from PIL import Image
 import torchvision.transforms as T
+from PIL import Image
+from torch.utils.data import DataLoader, Dataset
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from model import VLM, VLMConfig
-
 
 # =============================================================================
 # 数据集
@@ -52,7 +51,7 @@ class VLMDataset(Dataset):
 
         # 加载数据
         if os.path.exists(data_path):
-            with open(data_path, 'r', encoding='utf-8') as f:
+            with open(data_path, encoding='utf-8') as f:
                 for line in f:
                     if line.strip():
                         self.data.append(json.loads(line))
@@ -223,7 +222,7 @@ def train(args):
     warmup_steps = int(0.1 * total_steps)
     global_step = 0
 
-    print(f"\n开始 VLM 训练:")
+    print("\n开始 VLM 训练:")
     print(f"  数据量: {len(dataset)} 条图文对")
     print(f"  总步数: {total_steps}")
     print()

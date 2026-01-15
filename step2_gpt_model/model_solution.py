@@ -9,12 +9,10 @@ Step 2: GPT Model - Transformer 架构
 
 import math
 from dataclasses import dataclass
-from typing import Optional
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
 
 # =============================================================================
 # 模型配置
@@ -232,7 +230,7 @@ class GPT(nn.Module):
     def forward(
         self,
         idx: torch.Tensor,
-        targets: Optional[torch.Tensor] = None
+        targets: torch.Tensor | None = None
     ) -> tuple:
         """
         前向传播
@@ -246,7 +244,7 @@ class GPT(nn.Module):
             loss: 交叉熵损失（如果提供了 targets）
         """
         B, T = idx.size()
-        assert T <= self.config.block_size, f"序列长度 {T} 超过最大长度 {self.config.block_size}"
+        assert self.config.block_size >= T, f"序列长度 {T} 超过最大长度 {self.config.block_size}"
 
         # 1. Embedding
         pos = torch.arange(0, T, dtype=torch.long, device=idx.device)  # [T]
@@ -281,7 +279,7 @@ class GPT(nn.Module):
         idx: torch.Tensor,
         max_new_tokens: int,
         temperature: float = 1.0,
-        top_k: Optional[int] = None
+        top_k: int | None = None
     ) -> torch.Tensor:
         """
         自回归生成
@@ -334,25 +332,25 @@ def demo_components():
     # 1. LayerNorm
     ln = LayerNorm(config.n_embd)
     out = ln(x)
-    print(f"\n1. LayerNorm")
+    print("\n1. LayerNorm")
     print(f"   输入: {x.shape} -> 输出: {out.shape}")
 
     # 2. Attention
     attn = CausalSelfAttention(config)
     out = attn(x)
-    print(f"\n2. CausalSelfAttention")
+    print("\n2. CausalSelfAttention")
     print(f"   输入: {x.shape} -> 输出: {out.shape}")
 
     # 3. MLP
     mlp = MLP(config)
     out = mlp(x)
-    print(f"\n3. MLP")
+    print("\n3. MLP")
     print(f"   输入: {x.shape} -> 输出: {out.shape}")
 
     # 4. Transformer Block
     block = TransformerBlock(config)
     out = block(x)
-    print(f"\n4. TransformerBlock")
+    print("\n4. TransformerBlock")
     print(f"   输入: {x.shape} -> 输出: {out.shape}")
 
 
@@ -379,13 +377,13 @@ def demo_full_model():
 
     # 前向传播
     logits, loss = model(idx, targets)
-    print(f"\n前向传播:")
+    print("\n前向传播:")
     print(f"  输入 shape: {idx.shape}")
     print(f"  输出 logits shape: {logits.shape}")
     print(f"  Loss: {loss.item():.4f}")
 
     # 生成
-    print(f"\n生成演示:")
+    print("\n生成演示:")
     start_ids = torch.randint(0, config.vocab_size, (1, 5))
     print(f"  起始 tokens: {start_ids.tolist()}")
     generated = model.generate(start_ids, max_new_tokens=10, temperature=1.0, top_k=50)

@@ -50,7 +50,7 @@ uv sync
 
 # 从 Step 1 开始
 cd step1_tokenizer
-uv run python tokenizer.py
+uv run python tokenizer_solution.py
 ```
 
 ### UV 常用命令

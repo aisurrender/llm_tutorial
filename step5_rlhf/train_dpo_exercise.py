@@ -8,8 +8,6 @@ L_DPO = -log σ(β * (log π(y_w|x)/π_ref(y_w|x) - log π(y_l|x)/π_ref(y_l|x))
 """
 
 import torch
-import torch.nn.functional as F
-
 
 # =============================================================================
 # TODO 1: 理解并实现 DPO Loss
@@ -101,14 +99,14 @@ def test_dpo_loss():
         assert loss.dim() == 0, "loss 应该是标量"
         assert loss.item() >= 0, "loss 应该非负"
 
-        print(f"✅ DPO Loss 测试通过!")
+        print("✅ DPO Loss 测试通过!")
         print(f"   Loss: {loss.item():.4f}")
 
         # 解释
-        print(f"\n   解释:")
-        print(f"   策略模型: chosen 概率更高 (好)")
-        print(f"   参考模型: 两者差异不大")
-        print(f"   → 策略模型学会了偏好 chosen")
+        print("\n   解释:")
+        print("   策略模型: chosen 概率更高 (好)")
+        print("   参考模型: 两者差异不大")
+        print("   → 策略模型学会了偏好 chosen")
 
         return True
     except NotImplementedError as e:

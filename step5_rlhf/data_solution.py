@@ -12,6 +12,7 @@ DPO 数据格式:
 """
 
 import json
+
 import torch
 from torch.utils.data import Dataset
 
@@ -31,7 +32,7 @@ class DPODataset(Dataset):
         self.max_length = max_length
         self.data = []
 
-        with open(data_path, 'r', encoding='utf-8') as f:
+        with open(data_path, encoding='utf-8') as f:
             for line in f:
                 if line.strip():
                     self.data.append(json.loads(line))
@@ -201,7 +202,7 @@ def demo_dataset():
 
     # 查看一个样本
     sample = dataset[0]
-    print(f"\n样本 0:")
+    print("\n样本 0:")
     print(f"  Chosen IDs 长度: {len(sample['chosen_ids'])}")
     print(f"  Rejected IDs 长度: {len(sample['rejected_ids'])}")
     print(f"  Chosen mask sum: {sum(sample['chosen_mask'])} (计算 loss 的 token 数)")

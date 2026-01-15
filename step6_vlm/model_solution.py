@@ -6,11 +6,9 @@ VLM = Vision Encoder + Projection + LLM
 运行: python model.py --demo
 """
 
-import sys
 import os
-import math
+import sys
 from dataclasses import dataclass
-from typing import Optional
 
 import torch
 import torch.nn as nn
@@ -18,7 +16,6 @@ import torch.nn.functional as F
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from step2_gpt_model.model import GPT, GPTConfig
-
 
 # =============================================================================
 # 配置
@@ -227,9 +224,9 @@ class VLM(nn.Module):
 
     def forward(
         self,
-        images: Optional[torch.Tensor] = None,
-        input_ids: Optional[torch.Tensor] = None,
-        targets: Optional[torch.Tensor] = None,
+        images: torch.Tensor | None = None,
+        input_ids: torch.Tensor | None = None,
+        targets: torch.Tensor | None = None,
     ) -> tuple:
         """
         前向传播
@@ -295,7 +292,7 @@ class VLM(nn.Module):
     def generate(
         self,
         images: torch.Tensor,
-        prompt_ids: Optional[torch.Tensor] = None,
+        prompt_ids: torch.Tensor | None = None,
         max_new_tokens: int = 50,
         temperature: float = 1.0,
         top_k: int = 50,
@@ -383,14 +380,14 @@ def demo():
     input_ids = torch.randint(0, config.vocab_size, (B, 20))
     targets = torch.randint(0, config.vocab_size, (B, 20))
 
-    print(f"\n输入:")
+    print("\n输入:")
     print(f"  图片: {images.shape}")
     print(f"  文本: {input_ids.shape}")
 
     # 前向传播
     logits, loss = model(images, input_ids, targets)
 
-    print(f"\n输出:")
+    print("\n输出:")
     print(f"  Logits: {logits.shape}")
     print(f"  Loss: {loss.item():.4f}")
 
@@ -399,7 +396,7 @@ def demo():
     proj_params = sum(p.numel() for p in model.projection.parameters())
     llm_params = sum(p.numel() for p in model.llm.parameters())
 
-    print(f"\n参数分布:")
+    print("\n参数分布:")
     print(f"  Vision Encoder: {vision_params/1e6:.2f}M")
     print(f"  Projection: {proj_params/1e6:.4f}M")
     print(f"  LLM: {llm_params/1e6:.2f}M")

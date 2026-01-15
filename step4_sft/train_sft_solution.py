@@ -7,13 +7,13 @@ Step 4: SFT 训练脚本
     python train_sft.py --device cuda --epochs 3
 """
 
+import argparse
+import math
 import os
 import sys
-import math
 import time
-import argparse
-from functools import partial
 from contextlib import nullcontext
+from functools import partial
 
 import torch
 from torch.utils.data import DataLoader
@@ -22,6 +22,7 @@ from torch.utils.data import DataLoader
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from step2_gpt_model.model import GPT, GPTConfig
+
 from data import SFTDataset, SimpleTokenizer, collate_fn, create_sample_data
 
 
@@ -93,7 +94,7 @@ def train(args):
     warmup_steps = int(0.1 * total_steps)
     global_step = 0
 
-    print(f"\n开始 SFT 训练:")
+    print("\n开始 SFT 训练:")
     print(f"  数据量: {len(dataset)} 条对话")
     print(f"  总步数: {total_steps}")
     print(f"  Batch size: {args.batch_size}")

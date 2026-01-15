@@ -8,8 +8,8 @@ venv/
 .venv/
 ENV/
 
-# UV
-uv.lock
+# UV - Keep lock file for reproducibility
+# uv.lock  # Commented out - lock file should be committed
 
 # 参考仓库（开发时使用，不需要提交）
 _ref_*/
@@ -19,9 +19,17 @@ checkpoints/
 *.pt
 *.pth
 *.bin
+outputs/
+runs/
+logs/
 
 # 数据文件
 *.jsonl
+*.parquet
+*.npy
+*.npz
+data/raw/
+data/processed/
 
 # 训练生成的文本数据
 step*/*.txt
@@ -36,6 +44,8 @@ step*/*.txt
 # IDE
 .vscode/
 .idea/
+*.swp
+*.swo
 
 # OS
 .DS_Store
@@ -43,3 +53,13 @@ Thumbs.db
 
 # Jupyter
 .ipynb_checkpoints/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Pre-commit
+.pre-commit-cache/

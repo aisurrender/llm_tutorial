@@ -8,9 +8,9 @@ Step 4: SFT 数据处理
 """
 
 import json
+
 import torch
 from torch.utils.data import Dataset
-
 
 # =============================================================================
 # 特殊 Token 定义
@@ -56,7 +56,7 @@ class SFTDataset(Dataset):
         self.data = []
 
         # 加载数据
-        with open(data_path, 'r', encoding='utf-8') as f:
+        with open(data_path, encoding='utf-8') as f:
             for line in f:
                 if line.strip():
                     item = json.loads(line)
@@ -241,7 +241,7 @@ def demo_dataset():
 
     # 查看一个样本
     input_ids, labels = dataset[0]
-    print(f"\n样本 0:")
+    print("\n样本 0:")
     print(f"  Input IDs shape: {input_ids.shape}")
     print(f"  Labels shape: {labels.shape}")
 
@@ -251,7 +251,7 @@ def demo_dataset():
     print(f"  计算 Loss 的 token 数: {loss_tokens}/{total_tokens} ({100*loss_tokens/total_tokens:.1f}%)")
 
     # 解码查看
-    print(f"\n  解码后的输入:")
+    print("\n  解码后的输入:")
     print(f"  {tokenizer.decode(input_ids.tolist())[:200]}...")
 
 

@@ -7,8 +7,9 @@ Step 3: 数据加载
 """
 
 import os
+
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 
 
 class PretrainDataset(Dataset):
@@ -35,7 +36,7 @@ class PretrainDataset(Dataset):
         self.block_size = block_size
 
         # 读取文本
-        with open(data_path, 'r', encoding='utf-8') as f:
+        with open(data_path, encoding='utf-8') as f:
             text = f.read()
 
         # 构建字符词表
@@ -150,7 +151,7 @@ def test_dataset():
         # 显示示例
         input_text = ''.join([dataset.idx_to_char[i.item()] for i in x[:20]])
         target_text = ''.join([dataset.idx_to_char[i.item()] for i in y[:20]])
-        print(f"\n示例:")
+        print("\n示例:")
         print(f"  输入: {repr(input_text)}")
         print(f"  目标: {repr(target_text)}")
 

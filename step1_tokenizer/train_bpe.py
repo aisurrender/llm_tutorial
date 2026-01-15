@@ -7,8 +7,8 @@ SentencePiece 是 Google 开发的分词工具，支持 BPE 和 Unigram 算法�
 运行: python train_bpe.py --data your_text.txt --vocab_size 6400
 """
 
-import os
 import argparse
+import os
 
 
 def train_sentencepiece(data_file: str, model_prefix: str, vocab_size: int):

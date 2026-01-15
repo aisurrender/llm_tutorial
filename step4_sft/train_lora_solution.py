@@ -10,13 +10,13 @@ LoRA (Low-Rank Adaptation) 是一种高效微调方法：
     python train_lora.py --device cuda --epochs 3 --lora_r 8
 """
 
+import argparse
+import math
 import os
 import sys
-import math
 import time
-import argparse
-from functools import partial
 from contextlib import nullcontext
+from functools import partial
 
 import torch
 import torch.nn as nn
@@ -25,12 +25,13 @@ from torch.utils.data import DataLoader
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from step2_gpt_model.model import GPT, GPTConfig
-from data import SFTDataset, SimpleTokenizer, collate_fn, create_sample_data
 
+from data import SFTDataset, SimpleTokenizer, collate_fn, create_sample_data
 
 # =============================================================================
 # LoRA 实现
 # =============================================================================
+
 
 class LoRALinear(nn.Module):
     """
@@ -50,7 +51,9 @@ class LoRALinear(nn.Module):
     - LoRA: (out_features + in_features) × r
     """
 
-    def __init__(self, original_linear: nn.Linear, r: int = 8, alpha: float = 16, dropout: float = 0.05):
+    def __init__(
+        self, original_linear: nn.Linear, r: int = 8, alpha: float = 16, dropout: float = 0.05
+    ):
         """
         Args:
             original_linear: 原始的 nn.Linear 层
@@ -103,29 +106,27 @@ def apply_lora(model: nn.Module, r: int = 8, alpha: float = 16, target_modules: 
         target_modules: 要应用 LoRA 的模块名（如 ['c_attn', 'c_proj']）
     """
     if target_modules is None:
-        target_modules = ['c_attn', 'c_proj']  # 默认应用到 attention 层
+        target_modules = ["c_attn", "c_proj"]  # 默认应用到 attention 层
 
     lora_params = []
 
     for name, module in model.named_modules():
-        if isinstance(module, nn.Linear):
-            # 检查是否是目标模块
-            if any(target in name for target in target_modules):
-                # 创建 LoRA 层
-                lora_linear = LoRALinear(module, r=r, alpha=alpha)
+        if isinstance(module, nn.Linear) and any(target in name for target in target_modules):
+            # 创建 LoRA 层
+            lora_linear = LoRALinear(module, r=r, alpha=alpha)
 
-                # 替换原始层
-                parent_name = '.'.join(name.split('.')[:-1])
-                child_name = name.split('.')[-1]
-                parent = model
-                for part in parent_name.split('.'):
-                    if part:
-                        parent = getattr(parent, part)
-                setattr(parent, child_name, lora_linear)
+            # 替换原始层
+            parent_name = ".".join(name.split(".")[:-1])
+            child_name = name.split(".")[-1]
+            parent = model
+            for part in parent_name.split("."):
+                if part:
+                    parent = getattr(parent, part)
+            setattr(parent, child_name, lora_linear)
 
-                # 收集 LoRA 参数
-                lora_params.extend([lora_linear.lora_A, lora_linear.lora_B])
-                print(f"  应用 LoRA 到: {name}")
+            # 收集 LoRA 参数
+            lora_params.extend([lora_linear.lora_A, lora_linear.lora_B])
+            print(f"  应用 LoRA 到: {name}")
 
     # 返回 LoRA 参数
     return lora_params
@@ -141,6 +142,7 @@ def count_parameters(model: nn.Module) -> tuple:
 # =============================================================================
 # 训练
 # =============================================================================
+
 
 def get_lr(step: int, warmup_steps: int, total_steps: int, max_lr: float, min_lr: float) -> float:
     if step < warmup_steps:
@@ -171,7 +173,7 @@ def train(args):
         dataset,
         batch_size=args.batch_size,
         shuffle=True,
-        collate_fn=partial(collate_fn, pad_token_id=0)
+        collate_fn=partial(collate_fn, pad_token_id=0),
     )
 
     # 2. 创建模型
@@ -190,9 +192,9 @@ def train(args):
     lora_params = apply_lora(model, r=args.lora_r, alpha=args.lora_alpha)
 
     total, trainable = count_parameters(model)
-    print(f"\n参数统计:")
-    print(f"  总参数量: {total/1e6:.2f}M")
-    print(f"  可训练参数量: {trainable/1e6:.4f}M ({100*trainable/total:.2f}%)")
+    print("\n参数统计:")
+    print(f"  总参数量: {total / 1e6:.2f}M")
+    print(f"  可训练参数量: {trainable / 1e6:.4f}M ({100 * trainable / total:.2f}%)")
 
     # 4. 优化器（只优化 LoRA 参数）
     optimizer = torch.optim.AdamW(lora_params, lr=args.learning_rate, weight_decay=0.01)
@@ -210,7 +212,7 @@ def train(args):
     warmup_steps = int(0.1 * total_steps)
     global_step = 0
 
-    print(f"\n开始 LoRA 训练:")
+    print("\n开始 LoRA 训练:")
     print(f"  数据量: {len(dataset)} 条对话")
     print(f"  总步数: {total_steps}")
     print()
@@ -226,9 +228,11 @@ def train(args):
             input_ids = input_ids.to(device)
             labels = labels.to(device)
 
-            lr = get_lr(global_step, warmup_steps, total_steps, args.learning_rate, args.learning_rate * 0.1)
+            lr = get_lr(
+                global_step, warmup_steps, total_steps, args.learning_rate, args.learning_rate * 0.1
+            )
             for param_group in optimizer.param_groups:
-                param_group['lr'] = lr
+                param_group["lr"] = lr
 
             with ctx:
                 logits, loss = model(input_ids, targets=labels)
@@ -252,11 +256,13 @@ def train(args):
 
             if batch_idx % args.log_interval == 0:
                 elapsed = time.time() - start_time
-                print(f"Epoch {epoch+1}/{args.epochs} | Step {batch_idx}/{len(dataloader)} | "
-                      f"Loss: {loss.item():.4f} | LR: {lr:.2e} | Time: {elapsed:.1f}s")
+                print(
+                    f"Epoch {epoch + 1}/{args.epochs} | Step {batch_idx}/{len(dataloader)} | "
+                    f"Loss: {loss.item():.4f} | LR: {lr:.2e} | Time: {elapsed:.1f}s"
+                )
 
         avg_loss = epoch_loss / num_batches
-        print(f"\n>>> Epoch {epoch+1} 完成, 平均 Loss: {avg_loss:.4f}\n")
+        print(f"\n>>> Epoch {epoch + 1} 完成, 平均 Loss: {avg_loss:.4f}\n")
 
     # 7. 保存
     os.makedirs(args.save_dir, exist_ok=True)
@@ -269,11 +275,14 @@ def train(args):
             lora_state_dict[f"{name}.lora_A"] = module.lora_A.data
             lora_state_dict[f"{name}.lora_B"] = module.lora_B.data
 
-    torch.save({
-        'lora_state_dict': lora_state_dict,
-        'config': config,
-        'lora_config': {'r': args.lora_r, 'alpha': args.lora_alpha},
-    }, save_path)
+    torch.save(
+        {
+            "lora_state_dict": lora_state_dict,
+            "config": config,
+            "lora_config": {"r": args.lora_r, "alpha": args.lora_alpha},
+        },
+        save_path,
+    )
     print(f"LoRA 参数已保存到: {save_path}")
 
     print("\nLoRA 训练完成!")
