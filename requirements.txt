@@ -1,0 +1,18 @@
+# Core
+torch>=2.0.0
+numpy
+
+# Tokenizer
+sentencepiece
+tiktoken
+
+# Training utilities
+tqdm
+matplotlib
+
+# For VLM (Step 6)
+transformers
+Pillow
+
+# Optional: for better training visualization
+# wandb

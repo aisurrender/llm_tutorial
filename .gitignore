@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+
+# 参考仓库（开发时使用，不需要提交）
+_ref_*/
+
+# 训练产物
+checkpoints/
+*.pt
+*.pth
+*.bin
+
+# 数据文件
+*.jsonl
+
+# 训练生成的文本数据
+step*/*.txt
+
+# 保留 requirements.txt
+!requirements.txt
+
+# 分词器模型
+*.model
+*.vocab
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
