@@ -5,7 +5,11 @@ __pycache__/
 *.so
 .Python
 venv/
+.venv/
 ENV/
+
+# UV
+uv.lock
 
 # 参考仓库（开发时使用，不需要提交）
 _ref_*/

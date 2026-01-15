@@ -1,0 +1,31 @@
+[project]
+name = "llm-tutorial"
+version = "0.1.0"
+description = "LLM 训练全流程教程 - 从零开始，6 步掌握大模型训练"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+dependencies = [
+    # Core
+    "torch>=2.0.0",
+    "numpy",
+    # Tokenizer
+    "sentencepiece",
+    "tiktoken",
+    # Training utilities
+    "tqdm",
+    "matplotlib",
+    # For VLM (Step 6)
+    "transformers",
+    "Pillow",
+]
+
+[project.optional-dependencies]
+dev = [
+    "wandb",  # for training visualization
+]
+
+[tool.uv]
+dev-dependencies = [
+    "wandb",
+]

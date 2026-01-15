@@ -23,17 +23,50 @@
 
 ## 快速开始
 
+本项目使用 [UV](https://docs.astral.sh/uv/) 作为包管理工具（比 pip 快 10-100 倍）。
+
+### 安装 UV
+
+```bash
+# macOS / Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# 或者使用 pip（不推荐）
+pip install uv
+```
+
+### 设置项目
+
 ```bash
 # 克隆仓库
 git clone https://github.com/xxx/llm_tutorial.git
 cd llm_tutorial
 
-# 安装依赖
-pip install -r requirements.txt
+# 创建虚拟环境并安装依赖（一条命令搞定）
+uv sync
 
 # 从 Step 1 开始
 cd step1_tokenizer
-python tokenizer.py
+uv run python tokenizer.py
+```
+
+### UV 常用命令
+
+```bash
+# 运行 Python 脚本
+uv run python script.py
+
+# 添加新依赖
+uv add package_name
+
+# 安装开发依赖（如 wandb）
+uv sync --all-extras
+
+# 更新依赖
+uv lock --upgrade
 ```
 
 ## 学习路线
@@ -102,7 +135,8 @@ python tokenizer.py
 ```
 llm_tutorial/
 ├── README.md                 # 本文件
-├── requirements.txt          # 依赖包
+├── pyproject.toml            # 项目配置和依赖（UV）
+├── requirements.txt          # 依赖包（兼容 pip）
 │
 ├── step1_tokenizer/          # Step 1: 分词器
 ├── step2_gpt_model/          # Step 2: GPT 模型
