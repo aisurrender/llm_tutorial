@@ -10,11 +10,29 @@
 "Hello world" → Tokenizer → [15496, 995]
 ```
 
+## 学习方式
+
+本教程采用**动手实践**的方式：
+
+1. 打开 `tutorial.ipynb` 作为主学习界面
+2. 去 `tokenizer_exercise.py` 完成 TODO 部分
+3. 回到 Notebook 运行验证
+4. 卡住了？查看 `tokenizer_solution.py`
+
+## 文件结构
+
+| 文件 | 说明 |
+|------|------|
+| `tutorial.ipynb` | **主学习界面** - 概念讲解、运行代码、可视化 |
+| `tokenizer_exercise.py` | **练习文件** - 完成 TODO 部分 |
+| `tokenizer_solution.py` | **参考答案** - 卡住时查看 |
+| `train_bpe.py` | 使用 SentencePiece 训练分词器 |
+
 ## 学习目标
 
 1. 理解 Tokenizer 的作用
-2. 实现字符级 Tokenizer
-3. 理解并实现 BPE（Byte Pair Encoding）算法
+2. **动手实现**字符级 Tokenizer
+3. **动手实现** BPE 算法核心
 4. 使用 SentencePiece 训练中文分词器
 
 ## 核心概念
@@ -51,49 +69,40 @@ Step 2: 合并 "ab" 为新 token "ab"
 Step 3: 重复直到词表大小达到目标
 ```
 
-## 动手任务
+## 练习任务
 
-### 任务 1：理解字符级 Tokenizer
+### TODO 1: 实现 `encode` 方法（简单）
+将文本转换为 token ID 列表
 
-```bash
-python tokenizer.py --mode char
-```
+### TODO 2: 实现 `decode` 方法（简单）
+将 token ID 列表还原为文本
 
-查看 `CharTokenizer` 类，理解：
-- `encode()`: 文本 → token IDs
-- `decode()`: token IDs → 文本
+### TODO 3: 实现 `_get_stats` 方法（中等）
+统计相邻 token 对的频率
 
-### 任务 2：实现 BPE 算法
+### TODO 4: 完成 BPE 训练循环（较难）
+- 4a: 获取 pair 频率
+- 4b: 找到频率最高的 pair
+- 4c: 合并这个 pair
 
-```bash
-python tokenizer.py --mode bpe
-```
-
-查看 `BPETokenizer` 类，理解：
-- `train()`: 从语料训练词表
-- 合并规则是如何学习的
-
-### 任务 3：训练中文分词器
+## 验证你的实现
 
 ```bash
-python train_bpe.py --data your_chinese_text.txt --vocab_size 6400
+# 运行测试
+python tokenizer_exercise.py
+
+# 或在 Jupyter 中验证
+jupyter notebook tutorial.ipynb
 ```
 
-使用 SentencePiece 训练一个中文分词器。
-
-## 代码文件
-
-- `tokenizer.py` - 核心代码，包含字符级和 BPE 分词器实现
-- `train_bpe.py` - 使用 SentencePiece 训练分词器
-
-## 验证标准
+## 验证清单
 
 完成本步骤后，你应该能够：
 
 - [ ] 解释 Tokenizer 的作用
 - [ ] 用自己的代码将文本编码为 token IDs
 - [ ] 用自己的代码将 token IDs 解码回文本
-- [ ] 理解 BPE 算法的合并过程
+- [ ] 理解并实现 BPE 算法的合并过程
 - [ ] 训练一个简单的中文分词器
 
 ## 进入下一步

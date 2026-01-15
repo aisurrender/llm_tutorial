@@ -2,120 +2,67 @@
 
 ## 核心问题
 
-SFT 后模型能对话了，但回答质量参差不齐。如何让模型输出更符合人类偏好？
+SFT 后模型能对话，但回答质量参差不齐。如何让模型输出更符合人类偏好？
 
-**答案**：RLHF（Reinforcement Learning from Human Feedback）
+**答案**：DPO（Direct Preference Optimization）
 
-## 学习目标
+## 学习方式
 
-1. 理解人类偏好对齐的目标
-2. 理解 DPO（Direct Preference Optimization）原理
-3. 实现 DPO 训练
+1. 打开 `tutorial.ipynb` 作为主学习界面
+2. 去 `train_dpo_exercise.py` 完成 TODO
+3. 卡住了？查看 `*_solution.py`
+
+## 文件结构
+
+| 文件 | 说明 |
+|------|------|
+| `tutorial.ipynb` | **主学习界面** |
+| `train_dpo_exercise.py` | **DPO 练习** - 完成 TODO |
+| `train_dpo_solution.py` | DPO 完整实现 |
+| `data_solution.py` | 数据处理参考 |
+
+## 练习任务
+
+### TODO 1: 实现 DPO Loss
+
+```python
+# DPO 核心公式
+L_DPO = -log σ(β * (π_logratios - ref_logratios))
+
+# 其中
+π_logratios = log π(chosen) - log π(rejected)
+ref_logratios = log π_ref(chosen) - log π_ref(rejected)
+```
 
 ## 核心概念
 
-### 1. 什么是人类偏好？
-
-给定同一个问题，人类会偏好某些回答：
-
-```
-问题: "什么是AI？"
-
-回答 A (chosen): "AI是人工智能的缩写，是计算机科学的一个分支..."
-回答 B (rejected): "AI就是机器人。"
-
-人类偏好: A > B
-```
-
-### 2. 传统 RLHF 流程
-
-```
-1. 收集偏好数据 → 2. 训练 Reward Model → 3. PPO 训练 → 对齐的模型
-```
-
-**问题**：需要训练额外的 Reward Model，PPO 训练不稳定。
-
-### 3. DPO：更简单的方案
-
-DPO（Direct Preference Optimization）直接从偏好数据学习，无需 Reward Model。
-
-**核心公式**：
-
-```
-L_DPO = -log σ(β * (log π(y_w|x)/π_ref(y_w|x) - log π(y_l|x)/π_ref(y_l|x)))
-
-其中:
-- y_w: chosen（被偏好的回答）
-- y_l: rejected（不被偏好的回答）
-- π: 当前策略（训练中的模型）
-- π_ref: 参考策略（冻结的原始模型）
-- β: 温度系数
-```
-
-**直觉理解**：
-- 增加 chosen 回答的概率
-- 降低 rejected 回答的概率
-- 同时不要偏离原始模型太远（用 π_ref 约束）
-
-### 4. DPO vs PPO
+### DPO vs PPO
 
 | 方面 | PPO | DPO |
 |------|-----|-----|
 | Reward Model | 需要 | 不需要 |
 | 训练稳定性 | 较差 | 较好 |
-| 超参数 | 多 | 少 |
 | 实现复杂度 | 高 | 低 |
 
-## 动手任务
+### DPO 直觉理解
 
-### 任务 1：准备偏好数据
+1. 增加 chosen（好回答）的概率
+2. 降低 rejected（差回答）的概率
+3. 不要偏离参考模型太远
 
-```bash
-python data.py --create_sample
-```
-
-数据格式：
-```json
-{
-  "prompt": "问题",
-  "chosen": "好的回答",
-  "rejected": "差的回答"
-}
-```
-
-### 任务 2：DPO 训练
+## 验证你的实现
 
 ```bash
-python train_dpo.py --device cuda --epochs 1 --beta 0.1
+python train_dpo_exercise.py
 ```
 
-### 任务 3：对比效果
-
-比较 SFT 模型和 DPO 后模型的回答质量。
-
-## 代码文件
-
-- `data.py` - DPO 数据处理
-- `train_dpo.py` - DPO 训练脚本
-
-## DPO 关键参数
-
-| 参数 | 含义 | 建议值 |
-|------|------|--------|
-| `beta` | 温度系数 | 0.1 - 0.5 |
-| `learning_rate` | 学习率 | 1e-6 ~ 5e-7 |
-
-**注意**：DPO 的学习率要很小，避免模型"遗忘"。
-
-## 验证标准
-
-完成本步骤后，你应该能够：
+## 验证清单
 
 - [ ] 解释 RLHF 的目标
 - [ ] 解释 DPO 相比 PPO 的优势
-- [ ] 实现 DPO 训练
-- [ ] 对比 SFT 和 DPO 后的模型效果
+- [ ] 实现 DPO Loss
+- [ ] 理解 β 参数的作用
 
 ## 进入下一步
 
-完成 LLM 的全流程后，进入 [Step 6: VLM](../step6_vlm/)，学习如何扩展到多模态。
+进入 [Step 6: VLM](../step6_vlm/)，学习如何扩展到多模态。

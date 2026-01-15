@@ -12,53 +12,49 @@
 Loss: -log P("天气真好" | "今天天气")
 ```
 
+## 学习方式
+
+本教程采用**动手实践**的方式：
+
+1. 打开 `tutorial.ipynb` 作为主学习界面
+2. 去 `data_exercise.py` 完成数据集 TODO
+3. 去 `train_exercise.py` 完成训练 TODO
+4. 卡住了？查看 `*_solution.py`
+
+## 文件结构
+
+| 文件 | 说明 |
+|------|------|
+| `tutorial.ipynb` | **主学习界面** - 概念讲解、可视化 |
+| `data_exercise.py` | **数据集练习** - 完成 TODO |
+| `train_exercise.py` | **训练练习** - 完成 TODO |
+| `data_solution.py` | 数据集参考答案 |
+| `train_solution.py` | 训练参考答案 |
+
 ## 学习目标
 
 1. 理解预训练的目标：语言建模
-2. 实现训练循环
-3. 理解学习率调度（Warmup + Cosine Decay）
-4. 理解梯度裁剪、混合精度训练
+2. **动手实现**数据集构建
+3. **动手实现**学习率调度
+4. **动手实现**训练循环
 
-## 核心概念
+## 练习任务
 
-### 1. 语言建模目标
+### TODO 1: 实现 `__getitem__`（data_exercise.py）
 
-给定前文，预测下一个词的概率分布：
-
-```
-P(x_t | x_1, x_2, ..., x_{t-1})
-```
-
-损失函数是交叉熵：
+构建语言建模的输入-目标对：
 
 ```python
-loss = -sum(log P(x_t | x_1, ..., x_{t-1}))
+def __getitem__(self, idx):
+    x = data[idx : idx + block_size]      # 输入
+    y = data[idx + 1 : idx + block_size + 1]  # 目标（右移一位）
+    return x, y
 ```
 
-### 2. 训练循环
+### TODO 2: 实现学习率调度（train_exercise.py）
 
-```python
-for epoch in range(num_epochs):
-    for batch in dataloader:
-        # 前向传播
-        logits, loss = model(input_ids, targets=labels)
-
-        # 反向传播
-        loss.backward()
-
-        # 梯度裁剪
-        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
-
-        # 更新参数
-        optimizer.step()
-        optimizer.zero_grad()
-```
-
-### 3. 学习率调度
-
-**Warmup**：开始时学习率从 0 逐渐增加，避免初期不稳定
-
-**Cosine Decay**：之后学习率按余弦曲线衰减
+- 2a: Warmup 阶段的线性增加
+- 2b: Cosine Decay 阶段的衰减
 
 ```
 lr
@@ -71,44 +67,50 @@ lr
   warmup   decay
 ```
 
-### 4. 混合精度训练
+### TODO 3: 实现训练循环（train_exercise.py）
 
-使用 FP16/BF16 加速训练，减少显存占用：
+- 3a: 更新学习率
+- 3b: 前向传播 `logits, loss = model(x, targets=y)`
+- 3c: 反向传播 + 梯度裁剪 + 优化器更新
+
+## 核心概念
+
+### 语言建模目标
+
+给定前文，预测下一个词的概率分布：
+
+```
+P(x_t | x_1, x_2, ..., x_{t-1})
+```
+
+### 训练循环
 
 ```python
-with torch.cuda.amp.autocast(dtype=torch.bfloat16):
-    logits, loss = model(input_ids, targets=labels)
+for batch in dataloader:
+    logits, loss = model(input_ids, targets=labels)  # 前向
+    loss.backward()                                   # 反向
+    clip_grad_norm_(model.parameters(), 1.0)          # 梯度裁剪
+    optimizer.step()                                  # 更新
+    optimizer.zero_grad()                             # 清零
 ```
 
-## 动手任务
+### 学习率调度
 
-### 任务 1：在 Shakespeare 数据集上预训练
+- **Warmup**：开始时学习率从 0 逐渐增加，避免初期不稳定
+- **Cosine Decay**：之后学习率按余弦曲线衰减
+
+## 验证你的实现
 
 ```bash
-# 准备数据
-python data.py --create_sample
+# 测试数据集
+python data_exercise.py
 
-# 开始训练（CPU/MPS 可跑，约 5-10 分钟）
-python train.py --device cpu --epochs 5 --batch_size 8
+# 测试学习率调度
+python train_exercise.py --test
+
+# 运行完整训练
+python train_exercise.py --device cpu --epochs 3
 ```
-
-### 任务 2：观察训练过程
-
-- 观察 Loss 下降曲线
-- 观察学习率变化
-- 尝试不同的超参数
-
-### 任务 3：测试生成效果
-
-```bash
-python train.py --mode generate --prompt "To be or not to be"
-```
-
-## 代码文件
-
-- `data.py` - 数据加载和预处理
-- `train.py` - 训练脚本
-- `config.py` - 训练配置
 
 ## 关键超参数
 
@@ -119,14 +121,15 @@ python train.py --mode generate --prompt "To be or not to be"
 | `warmup_steps` | 预热步数 | 总步数的 5-10% |
 | `grad_clip` | 梯度裁剪 | 1.0 |
 
-## 验证标准
+## 验证清单
 
 完成本步骤后，你应该能够：
 
 - [ ] 解释"下一个词预测"的训练目标
+- [ ] 实现数据集的 `__getitem__`
 - [ ] 解释为什么需要学习率调度
-- [ ] 训练一个能生成连贯文本的小模型
-- [ ] 观察并解释训练过程中的 Loss 变化
+- [ ] 实现学习率调度函数
+- [ ] 实现完整的训练循环
 
 ## 进入下一步
 
