@@ -18,6 +18,7 @@ dependencies = [
     # For VLM (Step 6)
     "transformers",
     "Pillow",
+    "ipykernel>=7.1.0",
 ]
 
 [project.optional-dependencies]
