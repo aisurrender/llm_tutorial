@@ -56,28 +56,49 @@
 
 ## 练习任务
 
-### TODO 1: 实现 MLP forward（简单）
+### 基础练习
+
+#### TODO 1: 实现 MLP forward（简单）
 ```python
 def forward(self, x):
     # c_fc -> gelu -> c_proj -> dropout
 ```
 
-### TODO 2: 实现 TransformerBlock forward（简单）
+#### TODO 2: 实现 TransformerBlock forward（简单）
 ```python
 def forward(self, x):
     # x = x + attention(layernorm(x))
     # x = x + mlp(layernorm(x))
 ```
 
-### TODO 3: 实现 CausalSelfAttention（核心！）
+#### TODO 3: 实现 CausalSelfAttention（核心！）
 - 3a: 计算注意力分数 `att = Q @ K^T / sqrt(d_k)`
 - 3b: 应用因果掩码
 - 3c: Softmax + Dropout + 与 V 相乘
 
-### TODO 4: 实现 GPT forward
+#### TODO 4: 实现 GPT forward
 - 4a: Token Embedding + Position Embedding
 - 4b: 通过所有 Transformer Blocks
 - 4c: Final LayerNorm + LM Head
+
+### 进阶练习（选做）
+
+#### TODO 5: 实现 RoPE 位置编码
+挑战：用旋转位置编码（Rotary Position Embedding）替代绝对位置编码：
+- RoPE 通过旋转向量来编码位置信息
+- 这是 LLaMA、Qwen 等现代模型使用的方式
+- 优势：更好的长度外推能力
+
+```python
+# RoPE 核心思想：将位置信息编码为旋转角度
+# q_rotated = q * cos(θ) + rotate_half(q) * sin(θ)
+```
+
+#### TODO 6: 实现 KV Cache
+挑战：实现推理时的 KV Cache 加速：
+- 缓存已计算的 Key 和 Value
+- 新 token 只需计算自己的 Q，复用之前的 KV
+- 这是所有生产级 LLM 推理的标配
 
 ## 核心概念
 
@@ -125,11 +146,44 @@ python model_exercise.py
 
 完成本步骤后，你应该能够：
 
+**基础**
 - [ ] 画出 GPT 的架构图
 - [ ] 解释 Self-Attention 的计算过程
 - [ ] 解释为什么需要因果掩码（Causal Mask）
 - [ ] 实现 MLP、TransformerBlock、GPT
 - [ ] 计算给定配置的模型参数量
+
+**进阶**
+- [ ] 解释 RoPE 相比绝对位置编码的优势
+- [ ] 解释 KV Cache 如何加速推理
+- [ ] 了解 GQA（Grouped Query Attention）的原理
+
+## 推荐阅读
+
+### GitHub 仓库
+
+| 仓库 | 说明 |
+|------|------|
+| [karpathy/nanoGPT](https://github.com/karpathy/nanoGPT) | 最简洁的 GPT 实现，附带训练脚本 |
+| [harvardnlp/annotated-transformer](https://github.com/harvardnlp/annotated-transformer) | 论文逐行注释实现 |
+| [karpathy/minGPT](https://github.com/karpathy/minGPT) | 教育性 GPT 实现 |
+
+### 可视化教程
+
+| 资源 | 说明 |
+|------|------|
+| [The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/) | 图解 Transformer，强烈推荐 |
+| [3Blue1Brown: Attention](https://www.youtube.com/watch?v=eMlx5fFNoYc) | 可视化理解注意力机制 |
+| [Andrej Karpathy: Let's build GPT](https://www.youtube.com/watch?v=kCc8FmEb1nY) | 2小时从零实现 GPT |
+
+### 现代架构演进
+
+| 技术 | 说明 | 使用模型 |
+|------|------|----------|
+| **RoPE** | 旋转位置编码，更好的外推能力 | LLaMA, Qwen, Mistral |
+| **GQA** | 分组查询注意力，减少 KV Cache | LLaMA 2, Mistral |
+| **SwiGLU** | 改进的激活函数 | LLaMA, PaLM |
+| **RMSNorm** | 简化的归一化，更快 | LLaMA, Qwen |
 
 ## 进入下一步
 
